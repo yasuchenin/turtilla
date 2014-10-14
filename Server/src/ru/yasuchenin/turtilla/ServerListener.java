@@ -12,7 +12,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.*;
 
 public class ServerListener implements Runnable {
-	int qw;
 	private static ServerSocket serverSock;
 	private static ServerListener instance = null;
 	private static final int listenPort = 1488;
