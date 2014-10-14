@@ -12,6 +12,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.*;
 
 public class ServerListener implements Runnable {
+	int qw;
 	private static ServerSocket serverSock;
 	private static ServerListener instance = null;
 	private static final int listenPort = 1488;
@@ -73,7 +74,7 @@ public class ServerListener implements Runnable {
 					Integer task = (Integer) inpStream.readObject();
 					switch(task) {
 					case ADD_SIGN_TASK:
-						MainWindow.debugPrint("Accept ADD_SIGN_TASK."); 
+						MainWindow.debugPrint("Accept ADD_SIGN_TASK.");   
 						inputSign = (SignInfo) inpStream.readObject();
 						if(!inputSign.check()) {
 							sock.close();
