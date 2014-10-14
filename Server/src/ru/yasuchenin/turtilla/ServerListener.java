@@ -18,6 +18,7 @@ public class ServerListener implements Runnable {
 	private static final int ADD_SIGN_TASK=1;
 	private static final int ANALYSE_TASK=2;
 	private static final int UPDATE_SIGN_TASK=3;
+	int dsa;
 	
 	public static ServerListener getInstance() {
 		if(instance==null)
