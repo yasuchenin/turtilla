@@ -84,7 +84,7 @@ public class ServerListener implements Runnable {
 						hnSession.getTransaction().commit();
 						break;
 					case ANALYSE_TASK:
-						MainWindow.debugPrint("Accept ANALYSE_TAST.");
+						MainWindow.debugPrint("Accept ANALYSE_TASK.");
 						fileLength = inpStream.readLong();
 						byte[] bufferFile = new byte[(int) fileLength];
 						int count=0, offset=0;
