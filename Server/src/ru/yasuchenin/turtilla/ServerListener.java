@@ -11,6 +11,9 @@ import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.*;
 
+import ru.yasuchenin.turtilla.DAO.SignInfoDAO;
+import ru.yasuchenin.turtilla.DAO.SignInfoDAOimpl;
+
 public class ServerListener implements Runnable {
 	private static ServerSocket serverSock;
 	private static ServerListener instance = null;
@@ -63,9 +66,8 @@ public class ServerListener implements Runnable {
 		
 		public void run() {
 			inputSign = new SignInfo();
+			SignInfoDAO signDAO = new SignInfoDAOimpl();
 			try {
-				SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-				Session hnSession = sessionFactory.openSession();
 					sin = sock.getInputStream();
 					sout = sock.getOutputStream();
 					inpStream = new ObjectInputStream(sin);
@@ -79,9 +81,7 @@ public class ServerListener implements Runnable {
 							sock.close();
 							return;
 						}
-						hnSession.beginTransaction();
-						hnSession.save(inputSign);
-						hnSession.getTransaction().commit();
+						signDAO.addSign(inputSign);
 						break;
 					case ANALYSE_TASK:
 						MainWindow.debugPrint("Accept ANALYSE_TASK.");
@@ -93,8 +93,7 @@ public class ServerListener implements Runnable {
 				            fileLength-= count;
 				            offset+=count;
 				        }
-						Criteria crit = hnSession.createCriteria(SignInfo.class);
-						List signList = crit.list();
+						List signList = signDAO.listSigns();
 						ArrayList<SignInfo> arlist = compareAllSigns(bufferFile, signList);
 						outStream.writeInt(arlist.size());
 						Iterator<SignInfo> it=arlist.iterator();
@@ -104,11 +103,9 @@ public class ServerListener implements Runnable {
 					case UPDATE_SIGN_TASK:
 						MainWindow.debugPrint("Accept UPDATE_SIGN_TASK.");
 						inputSign = (SignInfo) inpStream.readObject();
-						hnSession.beginTransaction();
-						//hnSession.createCriteria(SignInfo.class).add(criterion)
+						
 						break;
 					}	
-					hnSession.close();
 					outStream.flush();
 					sock.close();
 			} 

@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 @SuppressWarnings({ "serial", "deprecation" })
 @Entity
 @Table(name="signs")
-class SignInfo implements Serializable {
+public class SignInfo implements Serializable {
 	
 	@Id
 	@GeneratedValue(generator="increment")
