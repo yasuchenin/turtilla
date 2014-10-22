@@ -18,7 +18,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.ScrollPane;
 
 public class MainWindow {
-	private int work=0;
+	private int work = 0;
 	private ServerListener servListener;
 	private Thread listenerThread;
 	private JFrame frame;
@@ -37,10 +37,11 @@ public class MainWindow {
 			}
 		});
 	}
-	
+
 	public static void debugPrint(String str) {
 		try {
-			debugPane.getStyledDocument().insertString(0, new java.util.Date()+"  "+str+"\n", null);
+			debugPane.getStyledDocument().insertString(0,
+					new java.util.Date() + "  " + str + "\n", null);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -56,35 +57,35 @@ public class MainWindow {
 		frame.setBounds(100, 100, 570, 423);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		
 		btnStart = new JButton("Start");
 		btnStart.setBounds(232, 340, 137, 55);
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(work==0) {
+				if (work == 0) {
 					servListener = ServerListener.getInstance();
 					listenerThread = new Thread(servListener);
 					listenerThread.setDaemon(true);
 					listenerThread.start();
 					btnStart.setText("Stop");
-					work=1;
+					work = 1;
 				} else {
 					try {
 						ServerListener.closeSock();
-					} catch (Exception e1) {}
+					} catch (Exception e1) {
+					}
 					listenerThread.interrupt();
 					btnStart.setText("Start");
-					work=0;
+					work = 0;
 				}
 			}
 		});
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().add(btnStart);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(6, 6, 558, 328);
 		frame.getContentPane().add(scrollPane);
-		
+
 		debugPane = new JTextPane();
 		debugPane.setEditable(false);
 		scrollPane.setViewportView(debugPane);

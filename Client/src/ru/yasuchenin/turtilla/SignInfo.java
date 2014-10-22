@@ -4,25 +4,27 @@ import java.io.Serializable;
 
 @SuppressWarnings({ "serial", "deprecation" })
 class SignInfo implements Serializable {
-	
+
 	private Long id;
 	private String sign;
 	private String virus;
 	private String description;
-	
+
 	/**
 	 * @return the id
 	 */
 	public Long getId() {
 		return id;
 	}
+
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return the sign
 	 */
@@ -31,7 +33,8 @@ class SignInfo implements Serializable {
 	}
 
 	/**
-	 * @param sign the sign to set
+	 * @param sign
+	 *            the sign to set
 	 */
 	public void setSign(String sign) {
 		this.sign = sign;
@@ -45,7 +48,8 @@ class SignInfo implements Serializable {
 	}
 
 	/**
-	 * @param virus the virus to set
+	 * @param virus
+	 *            the virus to set
 	 */
 	public void setVirus(String virus) {
 		this.virus = virus;
@@ -59,14 +63,16 @@ class SignInfo implements Serializable {
 	}
 
 	/**
-	 * @param descr the descr to set
+	 * @param descr
+	 *            the descr to set
 	 */
 	public void setDescription(String descr) {
 		this.description = descr;
 	}
 
 	public boolean check() {
-		if(sign.length()==0 || virus.length()==0 || description.length()==0)
+		if (sign.length() == 0 || virus.length() == 0
+				|| description.length() == 0)
 			return false;
 		return true;
 	}

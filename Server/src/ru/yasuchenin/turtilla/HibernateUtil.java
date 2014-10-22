@@ -1,6 +1,5 @@
 package ru.yasuchenin.turtilla;
 
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;

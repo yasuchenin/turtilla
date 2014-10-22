@@ -18,37 +18,37 @@ public class ServerListener implements Runnable {
 	private static ServerSocket serverSock;
 	private static ServerListener instance = null;
 	private static final int listenPort = 1488;
-	private static final int ADD_SIGN_TASK=1;
-	private static final int ANALYSE_TASK=2;
-	private static final int UPDATE_SIGN_TASK=3;
-	
+	private static final int ADD_SIGN_TASK = 1;
+	private static final int ANALYSE_TASK = 2;
+	private static final int UPDATE_SIGN_TASK = 3;
+
 	public static ServerListener getInstance() {
-		if(instance==null)
+		if (instance == null)
 			instance = new ServerListener();
 		return instance;
 	}
-	
+
 	public void run() {
 		try {
 			serverSock = new ServerSocket(listenPort);
 			MainWindow.debugPrint("Server start.");
-			while(!Thread.interrupted()) {
+			while (!Thread.interrupted()) {
 				Socket sock = serverSock.accept();
 				new ConnectionHandler(sock);
 			}
-		} 
-		catch (IOException x) {MainWindow.debugPrint("Server stop.");} 
+		} catch (IOException x) {
+			MainWindow.debugPrint("Server stop.");
+		}
 	}
-	
+
 	public static void closeSock() throws IOException {
 		serverSock.close();
 	}
-	
+
 	private ServerListener() {
 	}
-	
-	class ConnectionHandler implements Runnable 
-	{
+
+	class ConnectionHandler implements Runnable {
 		private Socket sock;
 		private SignInfo inputSign;
 		private InputStream sin;
@@ -56,79 +56,88 @@ public class ServerListener implements Runnable {
 		private ObjectInputStream inpStream;
 		private ObjectOutputStream outStream;
 		private long fileLength;
-		
+
 		public ConnectionHandler(Socket sock) {
-			this.sock=sock;
+			this.sock = sock;
 			Thread thread = new Thread(this);
 			thread.setDaemon(true);
 			thread.start();
 		}
-		
+
 		public void run() {
 			inputSign = new SignInfo();
 			SignInfoDAO signDAO = new SignInfoDAOimpl();
 			try {
-					sin = sock.getInputStream();
-					sout = sock.getOutputStream();
-					inpStream = new ObjectInputStream(sin);
-					outStream = new ObjectOutputStream(sout);
-					Integer task = (Integer) inpStream.readObject();
-					switch(task) {
-					case ADD_SIGN_TASK:
-						MainWindow.debugPrint("Accept ADD_SIGN_TASK.");   
-						inputSign = (SignInfo) inpStream.readObject();
-						if(!inputSign.check()) {
-							sock.close();
-							return;
-						}
-						signDAO.addSign(inputSign);
-						break;
-					case ANALYSE_TASK:
-						MainWindow.debugPrint("Accept ANALYSE_TASK.");
-						fileLength = inpStream.readLong();
-						byte[] bufferFile = new byte[(int) fileLength];
-						int count=0, offset=0;
-						while (fileLength > 0) {
-				            count = inpStream.read(bufferFile, offset, (int)fileLength);
-				            fileLength-= count;
-				            offset+=count;
-				        }
-						List signList = signDAO.listSigns();
-						ArrayList<SignInfo> arlist = compareAllSigns(bufferFile, signList);
-						outStream.writeInt(arlist.size());
-						Iterator<SignInfo> it=arlist.iterator();
-						while(it.hasNext()) 
-							outStream.writeObject(it.next());	
-						break;
-					case UPDATE_SIGN_TASK:
-						MainWindow.debugPrint("Accept UPDATE_SIGN_TASK.");
-						inputSign = (SignInfo) inpStream.readObject();
-						
-						break;
-					}	
-					outStream.flush();
-					sock.close();
-			} 
-			catch (SQLException x) {System.out.println("SQL EXCEPTION!!!");}
-			catch (IOException x) {System.out.println("IO EXCEPTION!!!");
-			x.printStackTrace();} 
-			catch (ClassNotFoundException e) {e.printStackTrace();}
+				sin = sock.getInputStream();
+				sout = sock.getOutputStream();
+				inpStream = new ObjectInputStream(sin);
+				outStream = new ObjectOutputStream(sout);
+				Integer task = (Integer) inpStream.readObject();
+				switch (task) {
+				case ADD_SIGN_TASK:
+					MainWindow.debugPrint("Accept ADD_SIGN_TASK.");
+					inputSign = (SignInfo) inpStream.readObject();
+					if (!inputSign.check()) {
+						sock.close();
+						return;
+					}
+					signDAO.addSign(inputSign);
+					break;
+				case ANALYSE_TASK:
+					MainWindow.debugPrint("Accept ANALYSE_TASK.");
+					fileLength = inpStream.readLong();
+					byte[] bufferFile = new byte[(int) fileLength];
+					int count = 0,
+					offset = 0;
+					while (fileLength > 0) {
+						count = inpStream.read(bufferFile, offset,
+								(int) fileLength);
+						fileLength -= count;
+						offset += count;
+					}
+					List signList = signDAO.listSigns();
+					ArrayList<SignInfo> arlist = compareAllSigns(bufferFile,
+							signList);
+					outStream.writeInt(arlist.size());
+					Iterator<SignInfo> it = arlist.iterator();
+					while (it.hasNext())
+						outStream.writeObject(it.next());
+					break;
+				case UPDATE_SIGN_TASK:
+					MainWindow.debugPrint("Accept UPDATE_SIGN_TASK.");
+					inputSign = (SignInfo) inpStream.readObject();
+
+					break;
+				}
+				outStream.flush();
+				sock.close();
+			} catch (SQLException x) {
+				System.out.println("SQL EXCEPTION!!!");
+			} catch (IOException x) {
+				System.out.println("IO EXCEPTION!!!");
+				x.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		private ArrayList<SignInfo> compareAllSigns(byte[] bufferFile, List signList) throws SQLException {
+
+		private ArrayList<SignInfo> compareAllSigns(byte[] bufferFile,
+				List signList) throws SQLException {
 			Iterator it = signList.iterator();
 			SignInfo currentSign;
 			SignComparator signComp = new SignComparator(bufferFile);
-			ArrayList<SignInfo> arlist = new ArrayList<SignInfo>(); 
-			while(it.hasNext()) {
+			ArrayList<SignInfo> arlist = new ArrayList<SignInfo>();
+			while (it.hasNext()) {
 				try {
-					currentSign = (SignInfo)it.next();
-					if(signComp.searchSign(currentSign.getSign())) {
+					currentSign = (SignInfo) it.next();
+					if (signComp.searchSign(currentSign.getSign())) {
 						arlist.add(currentSign);
-					} 
-				} catch(IllegalArgumentException ex) {continue;}
+					}
+				} catch (IllegalArgumentException ex) {
+					continue;
+				}
 			}
 			return arlist;
 		}
 	}
-}	
+}

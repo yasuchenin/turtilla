@@ -5,6 +5,8 @@ import ru.yasuchenin.turtilla.*;
 
 public interface SignInfoDAO {
 	void addSign(SignInfo signInfo);
+
 	List<SignInfo> listSigns();
+
 	void updateSign(SignInfo signInfo);
 }

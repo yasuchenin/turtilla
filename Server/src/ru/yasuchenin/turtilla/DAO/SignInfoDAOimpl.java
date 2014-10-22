@@ -5,7 +5,9 @@ import java.util.List;
 import org.hibernate.Session;
 
 import ru.yasuchenin.turtilla.SignInfo;
-import ru.yasuchenin.turtilla.HibernateUtil;;
+import ru.yasuchenin.turtilla.HibernateUtil;
+
+;
 
 public class SignInfoDAOimpl implements SignInfoDAO {
 
@@ -29,5 +31,5 @@ public class SignInfoDAOimpl implements SignInfoDAO {
 		session.update(signInfo);
 		session.getTransaction().commit();
 	}
-	
+
 }
